@@ -25,6 +25,25 @@ for (( i=0; i<${LENGTH}; i++));
   sleep 1
 done
 
+# Delete existing RDS  Databases
+# Note if deleting a read replica this is not your command 
+mapfile -t dbInstanceARR < <(aws rds describe-db-instances --output json | grep "\"DBInstanceIdentifier" | sed "s/[\"\:\, ]//g" | sed "s/DBInstanceIdentifier//g" )
+
+if [ ${#dbInstanceARR[@]} -gt 0 ]
+   then
+   echo "Deleting existing RDS database-instances"
+   LENGTH=${#dbInstanceARR[@]}  
+
+   # http://docs.aws.amazon.com/cli/latest/reference/rds/wait/db-instance-deleted.html
+      for (( i=0; i<${LENGTH}; i++));
+      do 
+      aws rds delete-db-instance --db-instance-identifier ${dbInstanceARR[i]} --skip-final-snapshot --output text
+      aws rds wait db-instance-deleted --db-instance-identifier ${dbInstanceARR[i]} --output text
+      sleep 1
+   done
+fi
+
+
 # Create Launchconf and Autoscaling groups
 
 LAUNCHCONF=(`aws autoscaling describe-launch-configurations --output json | grep LaunchConfigurationName | sed "s/[\"\:\, ]//g" | sed "s/LaunchConfigurationName//g"`)
