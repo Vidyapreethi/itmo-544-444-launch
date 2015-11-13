@@ -21,7 +21,7 @@ for i in {0..25};do echo -ne '.';sleep 1;done
 
 aws elb register-instances-with-load-balancer --load-balancer-name $2 --instances ${instanceARR[@]}
 
-aws elb configure-health-check --load-balancer-name itmo-544-pvp-lb --health-check Target=HTTP:80/index.html,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
+aws elb configure-health-check --load-balancer-name $2 --health-check Target=HTTP:80/index.html,Interval=30,UnhealthyThreshold=2,HealthyThreshold=2,Timeout=3
 
 echo -e "\nWaiting an additinal 3 minutes before opening ELB in browser"
 
@@ -40,23 +40,15 @@ aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-aut
 
 echo "Created auto scaling group"
 
-#creating db instance and db subnet group
-
-aws rds create-db-subnet-group --db-subnet-group-name mp1 --db-subnet-group-description "group for mp1" --subnet-ids subnet-b737cd8a subnet-968ddcbd subnet-1d555d6a subnet-0c82a155
-
-aws rds create-db-instance --db-instance-identifier pvp-db-mp --db-instance-class db.t1.micro --engine MySQL --master-username controller --master-user-password ilovebunnies --allocated-storage 5 --db-subnet-group-name mp1
-
-aws rds wait db-instance-available --db-instance-identifier pvp-db-mp 
-
-php ../itmo-544-444-fall2015/setup.php
-
 #Last Step
 
 chromium-browser $ELBURL &
 
 export ELBURL
 
+aws rds create-db-subnet-group --db-subnet-group-name mp1 --db-subnet-group-description "group for mp1" --subnet-ids subnet-b737cd8a subnet-968ddcbd subnet-1d555d6a subnet-0c82a155
 
+aws rds create-db-instance --db-instance-identifier pvp-db-mp --db-instance-class db.t1.micro --engine MySQL --master-username controller --master-user-password ilovebunnies --allocated-storage 5 --db-subnet-group-name mp1 --db-name customerrecords
 
-
+aws rds wait db-instance-available --db-instance-identifier pvp-db-mp 
 
