@@ -35,7 +35,7 @@ echo "Created launch configuration"
 
 #creating auto scaling
 
-aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --load-balancer-names itmo-544-pvp-lb --health-check-type ELB --min-size 1 --max-size 3 --desired-capacity 2 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier subnet-968ddcbd 
+aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --load-balancer-names $2 --health-check-type ELB --min-size 1 --max-size 3 --desired-capacity 2 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier subnet-968ddcbd 
 
 
 echo "Created auto scaling group"
@@ -45,10 +45,4 @@ echo "Created auto scaling group"
 chromium-browser $ELBURL &
 
 export ELBURL
-
-aws rds create-db-subnet-group --db-subnet-group-name mp1 --db-subnet-group-description "group for mp1" --subnet-ids subnet-b737cd8a subnet-968ddcbd subnet-1d555d6a subnet-0c82a155
-
-aws rds create-db-instance --db-instance-identifier pvp-db-mp --db-instance-class db.t1.micro --engine MySQL --master-username controller --master-user-password ilovebunnies --allocated-storage 5 --db-subnet-group-name mp1 --db-name customerrecords
-
-aws rds wait db-instance-available --db-instance-identifier pvp-db-mp 
 
