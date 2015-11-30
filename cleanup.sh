@@ -27,24 +27,24 @@ done
 
 # Delete existing RDS  Databases
 # Note if deleting a read replica this is not your command 
-mapfile -t dbInstanceARR < <(aws rds describe-db-instances --output json | grep "\"DBInstanceIdentifier" | sed "s/[\"\:\, ]//g" | sed "s/DBInstanceIdentifier//g" )
+#mapfile -t dbInstanceARR < <(aws rds describe-db-instances --output json | grep "\"DBInstanceIdentifier" | sed "s/[\"\:\, ]//g" | sed "s/DBInstanceIdentifier//g" )
 
-if [ ${#dbInstanceARR[@]} -gt 0 ]
-   then
-   echo "Deleting existing RDS database-instances"
-   LENGTH=${#dbInstanceARR[@]}  
+#if [ ${#dbInstanceARR[@]} -gt 0 ]
+ #  then
+ #  echo "Deleting existing RDS database-instances"
+ #  LENGTH=${#dbInstanceARR[@]}  
 
    # http://docs.aws.amazon.com/cli/latest/reference/rds/wait/db-instance-deleted.html
-      for (( i=0; i<${LENGTH}; i++));
-      do 
-      aws rds delete-db-instance --db-instance-identifier ${dbInstanceARR[i]} --skip-final-snapshot --output text
-      aws rds wait db-instance-deleted --db-instance-identifier ${dbInstanceARR[i]} --output text
-      sleep 1
-   done
-fi
+   #   for (( i=0; i<${LENGTH}; i++));
+   #   do 
+   #   aws rds delete-db-instance --db-instance-identifier ${dbInstanceARR[i]} --skip-final-snapshot --output text
+    #  aws rds wait db-instance-deleted --db-instance-identifier ${dbInstanceARR[i]} --output text
+    #  sleep 1
+   #done
+#fi
 
 
-# Create Launchconf and Autoscaling groups
+# Delete Launchconf and Autoscaling groups
 
 LAUNCHCONF=(`aws autoscaling describe-launch-configurations --output json | grep LaunchConfigurationName | sed "s/[\"\:\, ]//g" | sed "s/LaunchConfigurationName//g"`)
 
@@ -56,16 +56,16 @@ echo "the number is: " ${#SCALENAME[@]}
 if [ ${#SCALENAME[@]} -gt 0 ]
   then
 echo "SCALING GROUPS to delete..."
-#aws autoscaling detach-launch-
+aws autoscaling detach-launch-
 
-#aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $SCALENAME
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $SCALENAME
 
-#aws autoscaling delete-launch-configuration --launch-configuration-name $LAUNCHCONF
+aws autoscaling delete-launch-configuration --launch-configuration-name $LAUNCHCONF
 
-#aws autoscaling update-auto-scaling-group --auto-scaling-group-name $SCALENAME --min-size 0 --max-size 0
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name $SCALENAME --min-size 0 --max-size 0
 
-#aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $SCALENAME
-#aws autoscaling delete-launch-configuration --launch-configuration-name $LAUNCHCONF
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name $SCALENAME
+aws autoscaling delete-launch-configuration --launch-configuration-name $LAUNCHCONF
 fi
 
 echo "All done"
