@@ -27,6 +27,7 @@ echo -e "\nWaiting an additinal 3 minutes before opening ELB in browser"
 
 for i in {0..180};do echo -ne '.';sleep 1;done
 
+aws elb create-lb-cookie-stickiness-policy --load-balancer-name $2 --policy-name my-cookie-policy
 #create launch configuration
 
 aws autoscaling create-launch-configuration --launch-configuration-name itmo544-launch-config --image-id ami-d05e75b8 --key-name itmo-544-virtualbox --security-groups sg-77350e10 --instance-type t2.micro --user-data file://../itmo-544-444-env/install-webserver.sh --iam-instance-profile phpdeveloperRole
@@ -36,9 +37,22 @@ echo "Created launch configuration"
 #creating auto scaling
 
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --load-balancer-names $2 --health-check-type ELB --min-size 1 --max-size 3 --desired-capacity 2 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier subnet-968ddcbd 
-
-
 echo "Created auto scaling group"
+
+#creating sns-topic 
+
+ARN=(`aws sns create-topic --name pvp-cloud-watch`)
+
+echo "This is the ARN : $ARN"
+
+aws sns set-topic-attributes --topic-arn $ARN --attribute-name DisplayName --attribute-value cloud-watch
+aws sns subscribe --topic-arn $ARN --protocol email --notification-endpoint vparthas@hawk.iit.edu
+
+# creating cloud watch metrics
+
+aws cloudwatch put-metric-alarm --alarm-name pvp-cloud-watch --alarm-description "Alarm when CPU exceeds 30" --metric-name Latency --namespace AWS/ELB --statistic Maximum --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold  --dimensions Name=LoadBalancerName,Value=$2 --evaluation-periods 6 --$ARN --unit Milliseconds
+
+echo "Created Cloud watch metrics"
 
 #Last Step
 
