@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./cleanup.sh
+./destroy-all.sh
 
 #declare an array in bash 
 declare -a instanceARR
@@ -38,6 +38,14 @@ echo "Created launch configuration"
 
 aws autoscaling create-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --load-balancer-names $2 --health-check-type ELB --min-size 1 --max-size 3 --desired-capacity 2 --default-cooldown 600 --health-check-grace-period 120 --vpc-zone-identifier subnet-968ddcbd 
 echo "Created auto scaling group"
+
+echo "Created auto scaling"
+
+#updating auto scaling
+
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --health-check-grace-period 60 --vpc-zone-identifier subnet-41767929 --default-cooldown 600 
+
+echo " Updated auto scaling"
 
 #creating sns-topic 
 
