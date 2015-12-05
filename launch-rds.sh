@@ -28,7 +28,7 @@ aws rds create-db-instance --db-instance-identifier pvp-db-mp --db-instance-clas
 
 aws rds wait db-instance-available --db-instance-identifier pvp-db-mp 
     
-echo "Created database and read replica successfully"
+echo "Created database successfully"
 
 
 

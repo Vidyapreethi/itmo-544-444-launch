@@ -43,7 +43,7 @@ echo "Created auto scaling"
 
 #updating auto scaling
 
-aws autoscaling update-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --health-check-grace-period 60 --vpc-zone-identifier subnet-41767929 --default-cooldown 600 
+aws autoscaling update-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group --launch-configuration-name itmo544-launch-config --health-check-type ELB --min-size 3 --max-size 6 --desired-capacity 3 --health-check-grace-period 60 --vpc-zone-identifier subnet-968ddcbd --default-cooldown 600 
 
 echo " Updated auto scaling"
 
@@ -58,7 +58,7 @@ aws sns subscribe --topic-arn $ARN --protocol email --notification-endpoint vpar
 
 # creating cloud watch metrics
 
-aws cloudwatch put-metric-alarm --alarm-name pvp-cloud-watch --alarm-description "Alarm when CPU exceeds 30" --metric-name Latency --namespace AWS/ELB --statistic Maximum --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold  --dimensions Name=LoadBalancerName,Value=$2 --evaluation-periods 6 --$ARN --unit Milliseconds
+aws cloudwatch put-metric-alarm --alarm-name pvp-cloud-watch --alarm-description "Alarm when CPU exceeds 30" --metric-name Latency --namespace AWS/ELB --statistic Maximum --period 60 --threshold 30 --comparison-operator GreaterThanOrEqualToThreshold  --dimensions Name=LoadBalancerName,Value=$2 --evaluation-periods 6 --alarm-actions $ARN --unit Milliseconds
 
 echo "Created Cloud watch metrics"
 

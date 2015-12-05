@@ -57,23 +57,25 @@ SCALENAME=(`aws autoscaling describe-auto-scaling-groups --output table | grep A
 
 echo "The autoscaling group is: " ${SCALENAME[@]}
 
-if [ ${#SCALENAME[@]} -gt 0 ]
-  then
-echo "SCALING GROUPS to delete..."
+if [ ${#SCALENAME[@]} -gt 0 ] 
+ then
+#echo "SCALING GROUPS to delete..."
 
-aws autoscaling delete-auto-scaling-group --auto-scaling-group-name ${SCALENAME[@]}
+aws autoscaling delete-auto-scaling-group --auto-scaling-group-name itmo-544-auto-scaling-group
 echo " Deleted auto scaling group"
-aws autoscaling delete-launch-configuration --launch-configuration-name ${LAUNCHCONF[@]}
+aws autoscaling delete-launch-configuration --launch-configuration-name itmo544-launch-config 
 echo " Deleted launch configuration"
 
 fi
 
 # deleting s3 buckets
 
-aws s3api list-buckets --query 'Buckets[].Name'
 
+declare -a bucketARR
+bucketARR=(`aws s3api list-buckets --query 'Buckets[].Name'`)
+echo " S3 buckets are:" ${bucketARR[@]}
 for i in ${bucketARR[@]}; do if [[ $i == *"php-pv"* ]]; then aws s3 rb s3://$i --force ; fi done 
-echo "Deleted all s3 buckets"
+echo "Deleted all s3 buckets with php-pv"
 
 echo "All done"
 
