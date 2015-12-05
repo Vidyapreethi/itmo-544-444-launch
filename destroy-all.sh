@@ -62,8 +62,9 @@ if [ ${#SCALENAME[@]} -gt 0 ]
 echo "SCALING GROUPS to delete..."
 
 aws autoscaling delete-auto-scaling-group --auto-scaling-group-name ${SCALENAME[@]}
-
+echo " Deleted auto scaling group"
 aws autoscaling delete-launch-configuration --launch-configuration-name ${LAUNCHCONF[@]}
+echo " Deleted launch configuration"
 
 fi
 
