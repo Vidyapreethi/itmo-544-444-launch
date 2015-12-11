@@ -27,7 +27,7 @@ echo -e "\nWaiting an additinal 3 minutes before opening ELB in browser"
 
 for i in {0..180};do echo -ne '.';sleep 1;done
 
-aws elb create-lb-cookie-stickiness-policy --load-balancer-name $2 --policy-name my-cookie-policy
+aws elb create-lb-cookie-stickiness-policy --load-balancer-name $2 --policy-name my-cookie-policy --cookie-expiration-period 300
 #create launch configuration
 
 aws autoscaling create-launch-configuration --launch-configuration-name itmo544-launch-config --image-id ami-d05e75b8 --key-name itmo-544-virtualbox --security-groups sg-77350e10 --instance-type t2.micro --user-data file://../itmo-544-444-env/install-webserver.sh --iam-instance-profile phpdeveloperRole
